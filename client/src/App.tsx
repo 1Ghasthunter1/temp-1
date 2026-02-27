@@ -53,7 +53,7 @@ function App() {
     }
   }
 
-  function handleClick(scholar: Scholar) {
+  function handleClick(_scholar: Scholar) {
     if (swiped.current) return;
   }
 
@@ -61,7 +61,7 @@ function App() {
     <div className="mobile-only">
       <Toaster position="top-center" toastOptions={{ duration: 1500 }} />
       <div className="desktop-message">
-        <p>This app is only available on mobile devices.</p>
+        <p>nice try get ur fone out</p>
       </div>
       <div className="app">
         <p className="directions">Swipe right to add a point.</p>
