@@ -22,7 +22,7 @@ function App() {
   }, []);
 
   async function fetchScholars() {
-    const { data } = await supabase.from("scholars").select("*");
+    const { data } = await supabase.from("scholars").select("*").order("name");
     if (data) setScholars(data);
   }
 
