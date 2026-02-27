@@ -23,7 +23,6 @@ function App() {
 
   async function fetchScholars() {
     const { data } = await supabase.from("scholars").select("*");
-    console.log(data);
     if (data) setScholars(data);
   }
 
