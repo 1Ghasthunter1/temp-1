@@ -21,17 +21,17 @@ export default function Home({ session }: { session: Session }) {
   }, []);
 
   async function fetchScholarsWithCounts() {
-    const [{ data: scholarsData }, { data: swipeData }] = await Promise.all([
+    const [{ data: scholarsData }, { data: countData }] = await Promise.all([
       supabase.from("scholars").select("id, name").order("name"),
-      supabase.from("swipe_rights").select("scholar_id"),
+      supabase.rpc("get_swipe_counts"),
     ]);
 
     if (!scholarsData) return;
 
     const counts: Record<number, number> = {};
-    if (swipeData) {
-      for (const row of swipeData) {
-        counts[row.scholar_id] = (counts[row.scholar_id] || 0) + 1;
+    if (countData) {
+      for (const row of countData) {
+        counts[row.scholar_id] = row.count;
       }
     }
 
