@@ -1,84 +1,41 @@
-import { useEffect, useRef, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./supabaseClient";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
 import "./App.css";
 
-interface Scholar {
-  id: number;
-  name: string;
-  count: number;
-}
-
-const SWIPE_THRESHOLD = 50;
-
 function App() {
-  const [scholars, setScholars] = useState<Scholar[]>([]);
-  const touchStartX = useRef(0);
-  const touchStartY = useRef(0);
-  const swiped = useRef(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchScholars();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  async function fetchScholars() {
-    const { data } = await supabase.from("scholars").select("*").order("name");
-    if (data) setScholars(data);
-  }
-
-  async function incrementCount(scholar: Scholar) {
-    const newCount = scholar.count + 1;
-    await supabase
-      .from("scholars")
-      .update({ count: newCount })
-      .eq("id", scholar.id);
-    setScholars((prev) =>
-      prev.map((s) => (s.id === scholar.id ? { ...s, count: newCount } : s)),
-    );
-  }
-
-  function handleTouchStart(e: React.TouchEvent) {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-    swiped.current = false;
-  }
-
-  function handleTouchEnd(e: React.TouchEvent, scholar: Scholar) {
-    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
-    const deltaY = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
-    if (deltaY < SWIPE_THRESHOLD && deltaX > SWIPE_THRESHOLD) {
-      swiped.current = true;
-      incrementCount(scholar);
-      toast(`+1 ${scholar.name}`, { icon: "👉" });
-    }
-  }
-
-  function handleClick(_scholar: Scholar) {
-    if (swiped.current) return;
-  }
+  if (loading) return null;
 
   return (
     <div className="mobile-only">
-      <Toaster position="top-center" toastOptions={{ duration: 1500 }} />
-      <div className="desktop-message">
-        <p>nice try get ur fone out</p>
-      </div>
-      <div className="app">
-        <p className="directions">Swipe right to add a point.</p>
-        <ul className="scholar-list">
-          {scholars.map((scholar) => (
-            <li
-              key={scholar.id}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={(e) => handleTouchEnd(e, scholar)}
-              onClick={() => handleClick(scholar)}
-            >
-              <span className="name">{scholar.name}</span>
-              <span className="count">{scholar.count}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route element={<ProtectedRoute session={session} />}>
+          <Route path="/" element={<Home session={session!} />} />
+        </Route>
+      </Routes>
     </div>
   );
 }

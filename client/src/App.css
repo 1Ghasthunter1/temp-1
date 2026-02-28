@@ -73,3 +73,79 @@
   color: #666;
   font-variant-numeric: tabular-nums;
 }
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+
+.app-header .directions {
+  padding: 0;
+}
+
+.user-display-name {
+  font-size: 0.85rem;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.login-page form {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.login-page h1 {
+  text-align: center;
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-page input {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.login-page button {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #333;
+  color: #fff;
+}
+
+.login-page button[type="button"] {
+  background: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.login-page button:disabled {
+  opacity: 0.6;
+}
+
+.login-page .error {
+  color: #d32f2f;
+  text-align: center;
+  font-size: 0.9rem;
+}
